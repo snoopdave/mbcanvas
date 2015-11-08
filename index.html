@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<!--
+Copyright (c) 2015 David M. Johnson
+MIT License
+-->
+<head>
+<title>mbcanvas - Mandelbrot viewer in Typescript</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<script type="text/javascript" src="MandelbrotCanvas.js"> </script> 
+<script type="text/javascript" src="tests.js"> </script> 
+    
+<script>
+    var ds;
+    var canvas;
+    window.onload = function () {
+
+        var tl = new Point(-2.0,  2.0);
+        var br = new Point( 2.0, -2.0);
+        canvas = document.getElementById("canvas");
+        ds = new DrawingSurface( tl, br, canvas );
+
+        ds.draw_mandelbrot();
+        print_data();
+    };
+    function zoom( element, event ) {
+        var cp = new Point( event.clientX, event.clientY );
+        var is_hit = ds.zoom_out_button.is_hit( cp );
+        if ( is_hit ) {
+            ds.zoom_out( -0.3 );
+        } else {
+            var lp = ds.canvas_to_logical( cp );
+            ds.zoom_in( lp, 0.3 );
+        }
+        print_data();
+    }
+    function print_data() {
+        document.getElementById("log").innerHTML=
+             "Top Left ("+ds.tl.x+","+ds.tl.y+")<br>"
+            +"Bottom Right ("+ds.br.x+","+ds.br.y+")<br>"
+            +"Set Size "+ds.set_size; 
+    }
+</script>
+</head>
+<body>
+    <h1>mbcanvas - Mandelbrot viewer in Typescript</h1>
+    <canvas id="canvas" width="600" height="600" onclick="zoom(this, event)"> </canvas>
+    <div id="log"></div>
+</body>
+</html>
