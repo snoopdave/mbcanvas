@@ -17,13 +17,14 @@ MIT License
         var tl = new Point(-2.0,  2.0);
         var br = new Point( 2.0, -2.0);
         canvas = document.getElementById("canvas");
-        ds = new DrawingSurface( tl, br, canvas );
+        ds = new MandelbrotCanvas( tl, br, canvas );
 
         ds.draw_mandelbrot();
         print_data();
+        //tests(canvas);
     };
     function zoom( element, event ) {
-        var cp = new Point( event.clientX, event.clientY );
+        var cp = new Point( event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop );
         var is_hit = ds.zoom_out_button.is_hit( cp );
         if ( is_hit ) {
             ds.zoom_out( -0.3 );

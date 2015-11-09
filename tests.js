@@ -10,7 +10,7 @@ function tests(canvas) {
     
     var tl = new Point(-10, 10);
     var br = new Point(10, -10);
-    var ds = new DrawingSurface(tl, br, canvas);
+    var ds = new MandelbrotCanvas(tl, br, canvas);
     console.log("h=" + canvas.height + " w=" + canvas.width);
     
     var s = new Point(0, 0);

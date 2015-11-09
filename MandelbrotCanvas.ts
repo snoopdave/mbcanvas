@@ -6,62 +6,23 @@
 // mbcanvas - Mandelbrot viewer based on HTML5 canvas
 
 
-class Point {
-    x: number;
-    y: number;
-    constructor( x: number, y: number ) {
-        this.x = x;
-        this.y = y;
-    }
-}
+class MandelbrotCanvas {
 
-
-class ZoomOutButton {
-    private canvas;
-
-    // bounding box specified in canvas coordinates
-    tl: Point;
-    br: Point;
-    width: number;
-    height: number;
-
-    constructor( canvas ) {
-        this.tl = new Point(10,10);
-        this.br = new Point(40,40);
-        this.width = this.br.x - this.tl.x;
-        this.height = this.tl.y - this.br.y;
-        this.canvas = canvas;
-    }
-
-    draw() {
-        var context = this.canvas.getContext("2d");
-        context.strokeStyle = "rgb(255,255,255)";
-        context.strokeRect( this.tl.x, this.br.y, this.width, this.height );
-    }
-
-    is_hit( cp: Point ) {
-        // remember with canvas coordinates, y is inverted
-        if ( cp.x >= this.tl.x && cp.x <= this.br.x && cp.y >= this.tl.y && cp.y <= this.br.y ) {
-            return true;
-        }
-        return false;
-    }
-}
-
-
-class DrawingSurface {
     private canvas;
     zoom_out_button: ZoomOutButton;
     
     // view-port defined by top-right and bottom left logical coordinates
+
     tl: Point;        // top-left
     br: Point;        // bottom-right
-    tl0: Point;       // initial tl value 
-    br0: Point;       // initial br value
     xscale: number;   // x scale for logical to/from canvas coordinates
     yscale: number;   // y scale for logical to/from canvas coordinates
     width: number;    // logical width
     height: number;   // logical height
+
+    tl0: Point;       // initial tl value
+    br0: Point;       // initial br value
+
     set_size: number; // number of points in Mandelbrot set
     
     constructor( tl: Point, br: Point, canvas ) {
@@ -82,7 +43,7 @@ class DrawingSurface {
     }
     
     /**
-     * Draws Mandelbrot set with current view-port settings. 
+     * Draw Mandelbrot set with current view-port settings.
      */
     draw_mandelbrot() {
 
@@ -100,6 +61,7 @@ class DrawingSurface {
                 var canvas_point = new Point(x, y);
                 var complex = this.canvas_to_logical(canvas_point);
 
+                // determine if point is in Mandelbrot set
                 var m = this.mandelbrot(complex, 4, 255);
 
                 if (m == 0) {
@@ -118,8 +80,9 @@ class DrawingSurface {
     }
     
     /**
-     * @param start Point to test.
-     * @returns {number} 0 if point is in Mandelbrot set, else number of iterations before escape.
+     * Determine if point is in Mandelbrot set, or how close it got to being considered in the set.
+     * @param {Point} start The point to be tested.
+     * @returns {number} 0 if point is in set or number of iterations before it was rules to be out of the set.
      */
     mandelbrot( start: Point, limit: number, iterations: number ) {
 
@@ -184,3 +147,47 @@ class DrawingSurface {
         this.draw_mandelbrot();
     }
 }
+
+
+class Point {
+    x: number;
+    y: number;
+    constructor( x: number, y: number ) {
+        this.x = x;
+        this.y = y;
+    }
+}
+
+
+class ZoomOutButton {
+    private canvas;
+
+    // bounding box specified in canvas coordinates
+    tl: Point;
+    br: Point;
+    width: number;
+    height: number;
+
+    constructor( canvas ) {
+        this.tl = new Point(10,10);
+        this.br = new Point(40,40);
+        this.width = this.br.x - this.tl.x;
+        this.height = this.tl.y - this.br.y;
+        this.canvas = canvas;
+    }
+
+    draw() {
+        var context = this.canvas.getContext("2d");
+        context.strokeStyle = "rgb(255,255,255)";
+        context.strokeRect( this.tl.x, this.br.y, this.width, this.height );
+    }
+
+    is_hit( cp: Point ) {
+        // remember with canvas coordinates, y is inverted
+        if ( cp.x >= this.tl.x && cp.x <= this.br.x && cp.y >= this.tl.y && cp.y <= this.br.y ) {
+            return true;
+        }
+        return false;
+    }
+}
+
