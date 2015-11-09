@@ -8,6 +8,36 @@
     <link href='https://fonts.googleapis.com/css?family=Open+Sans:400,700' rel='stylesheet' type='text/css'>
     <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
     <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <script type="text/javascript" src="https://raw.githubusercontent.com/snoopdave/mbcanvas/master/MandelbrotCanvas.js"> </script>a
+    <script>
+      var ds;
+      var canvas;
+      window.onload = function () {
+        var tl = new Point(-2.0,  2.0);
+        var br = new Point( 2.0, -2.0);
+        canvas = document.getElementById("canvas");
+        ds = new DrawingSurface( tl, br, canvas );
+        ds.draw_mandelbrot();
+        print_data();
+      };
+      function zoom( element, event ) {
+        var cp = new Point( event.clientX, event.clientY );
+        var is_hit = ds.zoom_out_button.is_hit( cp );
+        if ( is_hit ) {
+          ds.zoom_out( -0.3 );
+        } else {
+          var lp = ds.canvas_to_logical( cp );
+          ds.zoom_in( lp, 0.3 );
+        }
+        print_data();
+      }
+      function print_data() {
+        document.getElementById("log").innerHTML=
+                "Top Left ("+ds.tl.x+","+ds.tl.y+")<br>"
+                +"Bottom Right ("+ds.br.x+","+ds.br.y+")<br>"
+                +"Set Size "+ds.set_size;
+      }
+    </script>
   </head>
   <body>
     <section class="page-header">
@@ -23,6 +53,8 @@
 <a id="mbcanvas" class="anchor" href="#mbcanvas" aria-hidden="true"><span class="octicon octicon-link"></span></a>mbcanvas</h1>
 
 <p>Mandelbrot viewer in Typescript with HTML5 canvas.</p>
+      <canvas id="canvas" width="600" height="600" onclick="zoom(this, event)"> </canvas>
+      <div id="log"></div>
 
       <footer class="site-footer">
         <span class="site-footer-owner"><a href="https://github.com/snoopdave/mbcanvas">mbcanvas</a> is maintained by <a href="https://github.com/snoopdave">snoopdave</a>.</span>
