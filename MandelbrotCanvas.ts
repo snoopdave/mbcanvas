@@ -118,17 +118,17 @@ class DrawingSurface {
     }
     
     /**
-     * @param complex Point to test.
+     * @param start Point to test.
      * @returns {number} 0 if point is in Mandelbrot set, else number of iterations before escape.
      */
-    mandelbrot( complex: Point, limit: number, iterations: number ) {
+    mandelbrot( start: Point, limit: number, iterations: number ) {
 
-        var square = new Point(complex.x, complex.y);
+        var squared = new Point(start.x, start.y);
         var count = 0;
         while ( count++ < iterations ) {
 
-            var x2 = Math.pow(square.x, 2);
-            var y2 = Math.pow(square.y, 2);
+            var x2 = Math.pow(squared.x, 2);
+            var y2 = Math.pow(squared.y, 2);
 
             if ( (x2 + y2) > limit ) { // not in the set 
                 return count;
@@ -136,11 +136,11 @@ class DrawingSurface {
 
             // square of a complex (x + yi) = (x*x - y*y, 2*x*y)
             var sx = x2 - y2;
-            var sy = (2 * square.x * square.y);
+            var sy = (2 * squared.x * squared.y);
 
             // add original point 
-            square.x = sx + complex.x;
-            square.y = sy + complex.y;
+            squared.x = sx + start.x;
+            squared.y = sy + start.y;
         }
 
         return 0;
