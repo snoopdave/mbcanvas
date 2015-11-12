@@ -5,14 +5,25 @@
 // mbcanvas - Mandelbrot viewer based on HTML5 canvas
 var MandelbrotCanvas = (function () {
     function MandelbrotCanvas(tl, br, canvas) {
+        this.max_iterations = 500;
         this.tl = tl;
         this.br = br;
         this.tl0 = tl;
         this.br0 = br;
         this.canvas = canvas;
         this.init_viewport();
-        this.zoom_out_button = new ZoomOutButton(canvas);
+        this.init_colors();
     }
+    MandelbrotCanvas.prototype.init_colors = function () {
+        var stops = [];
+        stops[0] = new Color(0, 0, 0);
+        stops[1] = new Color(50, 0, 0);
+        stops[160] = new Color(255, 0, 0);
+        stops[320] = new Color(255, 255, 0);
+        stops[420] = new Color(0, 0, 255);
+        stops[501] = new Color(255, 0, 255);
+        this.colors = new ColorTable(stops);
+    };
     MandelbrotCanvas.prototype.init_viewport = function () {
         this.width = this.br.x - this.tl.x;
         this.height = this.tl.y - this.br.y;
@@ -25,6 +36,7 @@ var MandelbrotCanvas = (function () {
     MandelbrotCanvas.prototype.draw_mandelbrot = function () {
         var context = this.canvas.getContext("2d");
         var image = context.createImageData(this.canvas.width, this.canvas.height);
+        var data = context.createImageData(this.canvas.width, this.canvas.height);
         this.set_size = 0;
         // loop through all pixels in canvas
         for (var x = 0; x < this.canvas.width; x++) {
@@ -33,24 +45,25 @@ var MandelbrotCanvas = (function () {
                 var canvas_point = new Point(x, y);
                 var complex = this.canvas_to_logical(canvas_point);
                 // determine if point is in Mandelbrot set
-                var m = this.mandelbrot(complex, 4, 255);
+                var m = this.mandelbrot(complex, 4, this.max_iterations);
                 if (m == 0) {
                     this.set_size++;
                 }
                 var offset = (x + y * this.canvas.width) * 4;
-                image.data[offset + 0] = (m == 0) ? 255 : m;
-                image.data[offset + 1] = m;
-                image.data[offset + 2] = m;
+                var color = this.colors.get(m);
+                image.data[offset] = color.r;
+                image.data[offset + 1] = color.g;
+                image.data[offset + 2] = color.b;
                 image.data[offset + 3] = 255;
+                data.data[offset] = m;
             }
         }
         context.putImageData(image, 0, 0);
-        this.zoom_out_button.draw();
     };
     /**
      * Determine if point is in Mandelbrot set, or how close it got to being considered in the set.
      * @param {Point} start The point to be tested.
-     * @returns {number} 0 if point is in set or number of iterations before it was rules to be out of the set.
+     * @returns {number} 0 if point is in set or number of iterations before it "escaped"
      */
     MandelbrotCanvas.prototype.mandelbrot = function (start, limit, iterations) {
         var squared = new Point(start.x, start.y);
@@ -76,7 +89,8 @@ var MandelbrotCanvas = (function () {
     MandelbrotCanvas.prototype.canvas_to_logical = function (cp) {
         return new Point(cp.x / this.xscale + this.tl.x, (this.tl.y - this.br.y) - (cp.y / this.yscale - this.br.y));
     };
-    MandelbrotCanvas.prototype.zoom_in = function (center, z) {
+    MandelbrotCanvas.prototype.zoom_in = function (z) {
+        var center = new Point(this.br.x - this.width / 2, this.tl.y - this.height / 2);
         this.zoom(center, z);
     };
     MandelbrotCanvas.prototype.zoom_out = function (z) {
@@ -91,11 +105,13 @@ var MandelbrotCanvas = (function () {
         this.init_viewport();
         this.draw_mandelbrot();
     };
-    MandelbrotCanvas.prototype.reset_zoom = function () {
+    MandelbrotCanvas.prototype.reset_view = function () {
         this.tl = this.tl0;
         this.br = this.br0;
         this.init_viewport();
         this.draw_mandelbrot();
+    };
+    MandelbrotCanvas.prototype.rotate_colors = function () {
     };
     return MandelbrotCanvas;
 })();
@@ -106,25 +122,51 @@ var Point = (function () {
     }
     return Point;
 })();
-var ZoomOutButton = (function () {
-    function ZoomOutButton(canvas) {
-        this.tl = new Point(10, 10);
-        this.br = new Point(40, 40);
-        this.width = this.br.x - this.tl.x;
-        this.height = this.tl.y - this.br.y;
-        this.canvas = canvas;
-    }
-    ZoomOutButton.prototype.draw = function () {
-        var context = this.canvas.getContext("2d");
-        context.strokeStyle = "rgb(255,255,255)";
-        context.strokeRect(this.tl.x, this.br.y, this.width, this.height);
-    };
-    ZoomOutButton.prototype.is_hit = function (cp) {
-        // remember with canvas coordinates, y is inverted
-        if (cp.x >= this.tl.x && cp.x <= this.br.x && cp.y >= this.tl.y && cp.y <= this.br.y) {
-            return true;
+var ColorTable = (function () {
+    /**
+     * @param stops Sparse array of color stops from which color table will be interpolated.
+     */
+    function ColorTable(stops) {
+        this.colors = [];
+        var previous = -1;
+        for (var index in stops) {
+            var i = parseInt(index);
+            var this_stop = stops[i];
+            if (previous >= 0) {
+                console.log("Generating " + previous + " to " + i);
+                var prev_stop = stops[previous];
+                var slope_r = (this_stop.r - prev_stop.r) / (i - previous);
+                var slope_g = (this_stop.g - prev_stop.g) / (i - previous);
+                var slope_b = (this_stop.b - prev_stop.b) / (i - previous);
+                for (var j = previous; j < i; j++) {
+                    this.colors[j] = new Color(-slope_r * (previous - j) + stops[previous].r, -slope_g * (previous - j) + stops[previous].g, -slope_b * (previous - j) + stops[previous].b);
+                    console.log(j + " -> " + this.colors[j].r + ", " + this.colors[j].g + ", " + this.colors[j].b);
+                }
+            }
+            else {
+                this.colors[i] = stops[i];
+            }
+            previous = i;
         }
-        return false;
+    }
+    ColorTable.prototype.get = function (i) {
+        var color = this.colors[i];
+        if (color) {
+            return color;
+        }
+        else {
+            //console.error("Error returning color for index = " + i);
+            return new Color(0, 0, 0);
+        }
     };
-    return ZoomOutButton;
+    return ColorTable;
 })();
+var Color = (function () {
+    function Color(r, g, b) {
+        this.r = r;
+        this.g = g;
+        this.b = b;
+    }
+    return Color;
+})();
+//# sourceMappingURL=MandelbrotCanvas.js.map

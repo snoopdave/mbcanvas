@@ -6,45 +6,62 @@ MIT License
 <head>
 <title>mbcanvas - Mandelbrot viewer in Typescript</title>
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<style type="text/css">
+    form { margin: 1em; }
+    button { padding: 0.5em; }    
+</style>
 <script type="text/javascript" src="MandelbrotCanvas.js"> </script> 
 <script type="text/javascript" src="tests.js"> </script> 
-    
 <script>
     var ds;
     var canvas;
+    
     window.onload = function () {
-
         var tl = new Point(-2.0,  2.0);
         var br = new Point( 2.0, -2.0);
         canvas = document.getElementById("canvas");
         ds = new MandelbrotCanvas( tl, br, canvas );
-
         ds.draw_mandelbrot();
         print_data();
-        //tests(canvas);
     };
-    function zoom( element, event ) {
+    function zoom(element, event) {
         var cp = new Point( event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop );
-        var is_hit = ds.zoom_out_button.is_hit( cp );
-        if ( is_hit ) {
-            ds.zoom_out( -0.3 );
-        } else {
-            var lp = ds.canvas_to_logical( cp );
-            ds.zoom_in( lp, 0.3 );
-        }
+        var lp = ds.canvas_to_logical( cp );
+        ds.zoom( lp, 0.3 );
         print_data();
     }
+    function zoom_in(element, event) {
+        ds.zoom_in( 0.3 );
+        print_data();
+    }
+    function zoom_out(element, event) {
+        ds.zoom_out( -0.3 );
+        print_data();
+    }
+    function reset_view(element, event) {
+        ds.reset_view();
+        print_data();
+    }
+    function rotate_colors(element, event) {
+        ds.rotate_colors();
+    }
     function print_data() {
-        document.getElementById("log").innerHTML=
+        document.getElementById("log").innerHTML =
              "Top Left ("+ds.tl.x+","+ds.tl.y+")<br>"
             +"Bottom Right ("+ds.br.x+","+ds.br.y+")<br>"
             +"Set Size "+ds.set_size; 
     }
-</script>
+ </script>
 </head>
 <body>
     <h1>mbcanvas - Mandelbrot viewer in Typescript</h1>
     <canvas id="canvas" width="600" height="600" onclick="zoom(this, event)"> </canvas>
+    <form action="#">
+        <button onclick="zoom_in()">Zoom-in</button>
+        <button onclick="zoom_out()">Zoom-out</button>
+        <button onclick="reset_view()">Reset View</button>
+        <button onclick="rotate_colors()">Rotate colors</button>
+    </form>
     <div id="log"></div>
 </body>
 </html>
