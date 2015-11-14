@@ -8,13 +8,6 @@ This is a simple [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set) 
 
 To build and run mbcanvas, you will need a computer with Node, Npm and Grunt installed, also you'll need a web-browser. 
 
-On a Debian Linux based system, you can install Node, Npm and Grunt like so:
-
-	sudo apt-get install node
-	sudo apt-get install npm
-	sudo npm install --global grunt
-
-
 ## Getting the code
 
 Clone this Github repo.
