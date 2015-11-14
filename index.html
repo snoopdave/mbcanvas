@@ -43,19 +43,22 @@ MIT License
         print_data();
     }
     function rotate_colors(element, event) {
-        ds.rotate_colors();
+        for ( var i=0; i<5; i++ ) {
+            ds.rotate_colors();
+        }
+        print_data();
     }
     function print_data() {
         document.getElementById("log").innerHTML =
-             "Top Left ("+ds.tl.x+","+ds.tl.y+")<br>"
-            +"Bottom Right ("+ds.br.x+","+ds.br.y+")<br>"
+             "Top Left ("    +ds.tl.x.toFixed(8)+", "+ds.tl.y.toFixed(8)+")<br>"
+            +"Bottom Right ("+ds.br.x.toFixed(8)+", "+ds.br.y.toFixed(8)+")<br>"
             +"Set Size "+ds.set_size; 
     }
  </script>
 </head>
 <body>
     <h1>mbcanvas - Mandelbrot viewer in Typescript</h1>
-    <canvas id="canvas" width="600" height="600" onclick="zoom(this, event)"> </canvas>
+    <canvas id="canvas" width="500" height="500" onclick="zoom(this, event)"> </canvas>
     <form action="#">
         <button onclick="zoom_in()">Zoom-in</button>
         <button onclick="zoom_out()">Zoom-out</button>

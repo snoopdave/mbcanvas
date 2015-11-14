@@ -26,6 +26,8 @@ class MandelbrotCanvas {
 
     max_iterations: number; // give each point this many attempts to "escape" from the set
     set_size: number;       // count of number of points in last Mandelbrot set computed
+    
+    rotated: number;
    
     
     constructor( tl: Point, br: Point, canvas ) {
@@ -35,7 +37,8 @@ class MandelbrotCanvas {
         this.tl0 = tl;
         this.br0 = br; 
         this.canvas = canvas;
-
+        this.rotated = 0;
+        
         this.init_viewport();
         this.init_colors();
     }
@@ -47,7 +50,7 @@ class MandelbrotCanvas {
         stops[160] = new Color(255,0,0);
         stops[320] = new Color(255,255,0);
         stops[420] = new Color(0,0,255);
-        stops[501] = new Color(255,0,255);
+        stops[500] = new Color(0,0,255);
         this.colors = new ColorTable(stops);
     }
 
@@ -65,7 +68,7 @@ class MandelbrotCanvas {
 
         var context = this.canvas.getContext("2d");
         var image = context.createImageData(this.canvas.width, this.canvas.height);
-        var data = context.createImageData(this.canvas.width, this.canvas.height);
+        this.data = context.createImageData(this.canvas.width, this.canvas.height);
 
         this.set_size = 0;
 
@@ -92,7 +95,7 @@ class MandelbrotCanvas {
                 image.data[offset + 2] = color.b;
                 image.data[offset + 3] = 255;
                 
-                data.data[offset] = m;
+                this.data.data[offset] = m;
             }
         }
         
@@ -170,6 +173,29 @@ class MandelbrotCanvas {
     }
     
     rotate_colors() {
+        
+        var context = this.canvas.getContext("2d");
+        var image = context.createImageData(this.canvas.width, this.canvas.height);
+
+        this.colors.rotate();
+        
+        // loop through all pixels in canvas
+        for ( var x=0; x<this.canvas.width; x++) {
+
+            for ( var y=0; y<this.canvas.height; y++) {
+
+                var offset = (x + y * this.canvas.width) * 4;
+                var color_index = this.data.data[offset];
+                
+                var color = this.colors.get(color_index);
+                image.data[offset    ] = color.r;
+                image.data[offset + 1] = color.g;
+                image.data[offset + 2] = color.b;
+                image.data[offset + 3] = 255;
+            }
+        }
+
+        context.putImageData(image, 0, 0);
     }
 }
 
@@ -190,7 +216,7 @@ class ColorTable {
     /**
      * @param stops Sparse array of color stops from which color table will be interpolated.
      */
-    constructor( stops: Array<Color> ) {
+    constructor( stops: Array<Color> ) { 
         this.colors = [];
         var previous = -1;
         for ( var index in stops ) {
@@ -211,7 +237,6 @@ class ColorTable {
                         -slope_r*(previous - j) + stops[previous].r,
                         -slope_g*(previous - j) + stops[previous].g,
                         -slope_b*(previous - j) + stops[previous].b);
-                    console.log( j+" -> "+this.colors[j].r+", "+this.colors[j].g+", "+this.colors[j].b);
                 }
                 
             } else {
@@ -229,6 +254,25 @@ class ColorTable {
             //console.error("Error returning color for index = " + i);
             return new Color(0,0,0);
         }
+    }
+    
+    rotate() {
+        var first = this.colors[1];
+        for ( var i=0; i<this.colors.length; i++ ) {
+            var new_color;
+            if ( i == 0 ) { // first color is the mandelbrot color, don't rotate
+                continue;
+                
+            } else if ( i == this.colors.length - 1) {
+                new_color = first; // wrap around
+                
+            } else {
+                new_color = this.colors[ i + 1 ];
+            }
+            this.colors[i].r = new_color.r;
+            this.colors[i].g = new_color.g;
+            this.colors[i].b = new_color.b;
+        } 
     }
 }
 
