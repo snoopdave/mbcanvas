@@ -2,7 +2,13 @@
 
 This is a simple [Mandelbrot Set](https://en.wikipedia.org/wiki/Mandelbrot_set) viewer written in Typescript with HTML5 canvas. The viewer allows you to view the  set and to zoom in, zoom out and rotate the color-table. Points that are determined to be in the set are shown in black and other points are colored based on the number of times they were squared before "escaping" the set.
 
+You can play with the viewer here: [http://rollerweblogger.org/mbcanvas/](http://rollerweblogger.org/mbcanvas/) and if you want to hack around with the source code follow the instructions below.
+
 ![Screenshot](https://raw.githubusercontent.com/snoopdave/mbcanvas/master/screenshot.png)
+
+# How to build mbcanvas locally
+
+The instructions explain how to get setup to build and run mbcanvas locally.
 
 ## Pre-requisites
 
