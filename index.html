@@ -11,7 +11,6 @@ MIT License
     button { padding: 0.5em; }    
 </style>
 <script type="text/javascript" src="MandelbrotCanvas.js"> </script> 
-<script type="text/javascript" src="tests.js"> </script> 
 <script>
     var ds;
     var canvas;
@@ -54,10 +53,11 @@ MIT License
             +"Bottom Right ("+ds.br.x.toFixed(8)+", "+ds.br.y.toFixed(8)+")<br>"
             +"Set Size "+ds.set_size; 
     }
- </script>
+</script>
 </head>
 <body>
     <h1>mbcanvas - Mandelbrot viewer in Typescript</h1>
+    <p>Click to zoom</p>
     <canvas id="canvas" width="500" height="500" onclick="zoom(this, event)"> </canvas>
     <form action="#">
         <button onclick="zoom_in()">Zoom-in</button>
