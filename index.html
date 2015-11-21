@@ -10,60 +10,17 @@ MIT License
     form { margin: 1em; }
     button { padding: 0.5em; }    
 </style>
-<script type="text/javascript" src="MandelbrotCanvas.js"> </script> 
-<script>
-    var ds;
-    var canvas;
-    
-    window.onload = function () {
-        var tl = new Point(-2.0,  2.0);
-        var br = new Point( 2.0, -2.0);
-        canvas = document.getElementById("canvas");
-        ds = new MandelbrotCanvas( tl, br, canvas );
-        ds.draw_mandelbrot();
-        print_data();
-    };
-    function zoom(element, event) {
-        var cp = new Point( event.clientX - canvas.offsetLeft, event.clientY - canvas.offsetTop );
-        var lp = ds.canvas_to_logical( cp );
-        ds.zoom( lp, 0.3 );
-        print_data();
-    }
-    function zoom_in(element, event) {
-        ds.zoom_in( 0.3 );
-        print_data();
-    }
-    function zoom_out(element, event) {
-        ds.zoom_out( -0.3 );
-        print_data();
-    }
-    function reset_view(element, event) {
-        ds.reset_view();
-        print_data();
-    }
-    function rotate_colors(element, event) {
-        for ( var i=0; i<5; i++ ) {
-            ds.rotate_colors();
-        }
-        print_data();
-    }
-    function print_data() {
-        document.getElementById("log").innerHTML =
-             "Top Left ("    +ds.tl.x.toFixed(8)+", "+ds.tl.y.toFixed(8)+")<br>"
-            +"Bottom Right ("+ds.br.x.toFixed(8)+", "+ds.br.y.toFixed(8)+")<br>"
-            +"Set Size "+ds.set_size; 
-    }
-</script>
+    <script type="text/javascript" src="public/app.js"> </script> 
 </head>
 <body>
     <h1>mbcanvas - Mandelbrot viewer in Typescript</h1>
     <p>Click to zoom</p>
-    <canvas id="canvas" width="500" height="500" onclick="zoom(this, event)"> </canvas>
+    <canvas id="canvas" width="500" height="500"> </canvas>
     <form action="#">
-        <button onclick="zoom_in()">Zoom-in</button>
-        <button onclick="zoom_out()">Zoom-out</button>
-        <button onclick="reset_view()">Reset View</button>
-        <button onclick="rotate_colors()">Rotate colors</button>
+        <button id="zoom_in">Zoom-in</button>
+        <button id="zoom_out">Zoom-out</button>
+        <button id="reset_view">Reset View</button>
+        <button id="rotate_colors">Rotate colors</button>
     </form>
     <div id="log"></div>
 </body>

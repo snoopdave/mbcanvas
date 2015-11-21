@@ -1,5 +1,6 @@
 
 module.exports = function (grunt) {
+  grunt.loadNpmTasks('grunt-browserify');
   grunt.loadNpmTasks('grunt-typescript');
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-contrib-connect');
@@ -17,23 +18,29 @@ module.exports = function (grunt) {
     },
     typescript: {
       base: {
-        src: ['*.ts'],
-        dest: 'MandelbrotCanvas.js',
+        src: ['src/*.ts'],
         options: {
-          target: 'es5'
+          target: 'es5',
+          "module": "commonjs"
         }
       }
     },
     watch: {
-      files: '*.ts',
+      files: 'src/*.ts',
       tasks: ['typescript']
     },
     open: {
       dev: {
         path: 'http://localhost:8080/index.html'
       }
+    },
+    browserify: {
+      'public/app.js': ['src/index.js', 'src/Graphics.js', 'src/MandelbrotCanvas.js'],
+      'browserifyOptions': {
+        standalone: 'MbCanvas'
+      }
     }
-  });
-
-  grunt.registerTask('default', ['connect', 'open', 'watch']);
+  })
+    
+  grunt.registerTask('default', ['browserify', 'connect', 'open', 'watch']);
 }
