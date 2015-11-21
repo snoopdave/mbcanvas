@@ -28,15 +28,19 @@ First, install Node packages and grunt.
 
 	npm install
 	
-Next, compile the Typescript code into JavaScript:
-
-	grunt typescript
-	
-Finally, let grunt start a web-server and run mbcanvas in your web-browser.
+Finally, running Grunt will compile, browserify and run the project in your browser: 
 
 	grunt
 	
-Until you stop grunt with control-c, it will watch the Mandelbrot.ts file and will automatically recompile the JavaScript if you change the Typescript code.
+Until you stop grunt with control-c, it will watch the project's Typescript code and recompile it when it changes. 
 
 
+## Background
 
+I created this as a way to learn more about Typescript and the HTML5 Canvas. 
+Below are some of the things I learned and some of the things illustrated by this project.
+
+* How to use Grunt to "transpile" TypeScript to JavaScript.
+* How to set individual pixels in an image and paint that image to the Canvas.
+* How to put Typescript classes and functions in separate files.
+* How to use Browserify to enable use of "require" in code that will run in a browser.

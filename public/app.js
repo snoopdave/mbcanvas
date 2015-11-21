@@ -240,6 +240,11 @@ var MandelbrotCanvas = (function (_super) {
 exports.MandelbrotCanvas = MandelbrotCanvas;
 
 },{"./Graphics":1}],3:[function(require,module,exports){
+/**
+ * Copyright (c) 2015 David M. Johnson
+ * MIT License
+ */
+// hook MandelCanvas into browswer events
 var DS = require('./Graphics');
 var MC = require('./MandelbrotCanvas');
 var ds;

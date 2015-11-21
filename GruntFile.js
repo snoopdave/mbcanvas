@@ -42,5 +42,5 @@ module.exports = function (grunt) {
     }
   })
     
-  grunt.registerTask('default', ['browserify', 'connect', 'open', 'watch']);
+  grunt.registerTask('default', ['typescript', 'browserify', 'connect', 'open', 'watch']);
 }
