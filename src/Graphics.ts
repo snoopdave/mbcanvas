@@ -29,7 +29,7 @@ export class DrawingSurface {
 
     protected canvas;
 
-    // view-port defined by top-right and bottom left logical coordinates
+    // view-port defined by top-left and bottom left logical coordinates
 
     tl: Point;        // top-left
     br: Point;        // bottom-right
