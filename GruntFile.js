@@ -35,10 +35,7 @@ module.exports = function (grunt) {
       }
     },
     browserify: {
-      'public/app.js': ['src/index.js', 'src/Graphics.js', 'src/MandelbrotCanvas.js'],
-      'browserifyOptions': {
-        standalone: 'MbCanvas'
-      }
+      'public/app.js': ['src/index.js', 'src/Graphics.js', 'src/MandelbrotCanvas.js']
     }
   })
     
