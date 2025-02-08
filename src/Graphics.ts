@@ -42,15 +42,17 @@ export class DrawingSurface {
     width: number;    // logical width
     height: number;   // logical height
 
-    constructor( tl: Point, br: Point, canvas ) {
+    constructor(tl: Point, br: Point, canvas: HTMLCanvasElement) {
         this.tl = tl;
         this.br = br;
         this.tl0 = tl;
         this.br0 = br;
         this.canvas = canvas;
+        this.width = this.br.x - this.tl.x;
+        this.height = this.tl.y - this.br.y;
         this.init_viewport();
     }
-    
+
     init_viewport() {
         this.width  = this.br.x - this.tl.x;
         this.height = this.tl.y - this.br.y;
@@ -64,28 +66,38 @@ export class DrawingSurface {
             (this.canvas.height) - this.yscale*(lp.y - this.br.y));
     }
 
-    canvas_to_logical( cp: Point ) {
+    canvas_to_logical(cp: Point): Point {
         return new Point(
-            cp.x / this.xscale + this.tl.x,
-            (this.tl.y - this.br.y) - (cp.y / this.yscale - this.br.y)
+          cp.x / this.xscale + this.tl.x,
+          this.br.y + cp.y / this.yscale
         );
     }
 
     zoom_in( z: number ) {
-        var center = new Point( this.br.x - this.width/2, this.tl.y - this.height/2 );
+        const center = new Point( this.br.x - this.width/2, this.tl.y - this.height/2 );
         this.zoom( center, z );
     }
 
     zoom_out( z: number ) {
-        var center = new Point( this.br.x - this.width/2, this.tl.y - this.height/2 );
+        const center = new Point( this.br.x - this.width/2, this.tl.y - this.height/2 );
         this.zoom( center, z );
     }
 
-    zoom( center: Point, z: number ) {
-        var dx = this.width * z;
-        var dy = this.height * z;
-        this.tl = new Point( center.x - this.width/2 + dx, center.y + this.height/2 - dy );
-        this.br = new Point( center.x + this.width/2 - dx, center.y - this.height/2 + dy );
+    zoom(center: Point, z: number) {
+        const scale = 1.0 - z;
+        const newWidth = this.width * scale;
+        const newHeight = this.height * scale;
+
+        this.tl = new Point(
+          center.x - newWidth/2,
+          center.y + newHeight/2
+        );
+
+        this.br = new Point(
+          center.x + newWidth/2,
+          center.y - newHeight/2
+        );
+
         this.init_viewport();
     }
 
@@ -105,21 +117,21 @@ export class ColorTable {
      */
     constructor( stops: Array<Color> ) {
         this.colors = [];
-        var previous = -1;
-        for ( var index in stops ) {
+        let previous = -1;
+        for ( let index in stops ) {
 
-            var i = parseInt(index);
-            var this_stop = stops[i];
+            const i = parseInt(index);
+            const this_stop = stops[i];
 
             if ( previous >= 0 ) {
                 console.log("Generating " + previous + " to " + i);
-                var prev_stop = stops[previous];
+                const prev_stop = stops[previous];
 
-                var slope_r = (this_stop.r - prev_stop.r) / (i - previous);
-                var slope_g = (this_stop.g - prev_stop.g) / (i - previous);
-                var slope_b = (this_stop.b - prev_stop.b) / (i - previous);
+                const slope_r = (this_stop.r - prev_stop.r) / (i - previous);
+                const slope_g = (this_stop.g - prev_stop.g) / (i - previous);
+                const slope_b = (this_stop.b - prev_stop.b) / (i - previous);
 
-                for ( var j=previous; j<i; j++ ) {
+                for ( let j=previous; j<i; j++ ) {
                     this.colors[j] = new Color(
                         -slope_r*(previous - j) + stops[previous].r,
                         -slope_g*(previous - j) + stops[previous].g,
@@ -134,7 +146,7 @@ export class ColorTable {
     }
 
     get( i: number ) {
-        var color = this.colors[i];
+        const color = this.colors[i];
         if (color) {
             return color;
         } else {
@@ -144,9 +156,9 @@ export class ColorTable {
     }
 
     rotate() {
-        var first = this.colors[1];
-        for ( var i=0; i<this.colors.length; i++ ) {
-            var new_color;
+        const first = this.colors[1];
+        for ( let i=0; i<this.colors.length; i++ ) {
+            let new_color;
             if ( i == 0 ) { // first color is the mandelbrot color, don't rotate
                 continue;
 
