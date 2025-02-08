@@ -12,7 +12,7 @@ The instructions explain how to get setup to build and run mbcanvas locally.
 
 ## Pre-requisites
 
-To build and run mbcanvas, you will need a computer with Node, Npm and Grunt installed, also you'll need a web-browser. 
+To build and run mbcanvas, you will need a computer with Node and npm installed, also you'll need a web-browser. 
 
 ## Getting the code
 
@@ -24,23 +24,16 @@ Clone this Github repo.
 	
 Open up a terminal window and cd into the mbcanvas directory. 
 
-First, install Node packages and grunt.
+First, install dependencies:
 
 	npm install
 	
-Finally, running Grunt will compile, browserify and run the project in your browser: 
+To start the development server:
 
-	grunt
+	npm start
 	
-Until you stop grunt with control-c, it will watch the project's Typescript code and recompile it when it changes. 
+This will compile the TypeScript code and start a development server. The application will automatically reload when you make changes to the source code.
 
+To create a production build:
 
-## Background
-
-I created this as a way to learn more about Typescript and the HTML5 Canvas. 
-Below are some of the things I learned and some of the things illustrated by this project.
-
-* How to use Grunt to "transpile" TypeScript to JavaScript.
-* How to set individual pixels in an image and paint that image to the Canvas.
-* How to put Typescript classes and functions in separate files.
-* How to use Browserify to enable use of "require" in code that will run in a browser.
+	npm run build
