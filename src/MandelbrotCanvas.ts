@@ -9,20 +9,20 @@ import DS = require('./Graphics');
 
 export class MandelbrotCanvas extends DS.DrawingSurface {
 
-    private data;
+    private data: ImageData;
     private colors: DS.ColorTable;
     
     max_iterations: number; // give each point this many attempts to "escape" from the set
     set_size: number;       // count of number of points in last Mandelbrot set computed
     
-    constructor( tl: DS.Point, br: DS.Point, canvas ) {
+    constructor( tl: DS.Point, br: DS.Point, canvas: HTMLCanvasElement ) {
         super( tl, br, canvas );
         this.max_iterations = 500;
         this.init_colors();
     }
     
     init_colors() {
-        var stops = []
+        const stops = []
         stops[0]   = new DS.Color(0,0,0);
         stops[1]   = new DS.Color(50,0,0);
         stops[160] = new DS.Color(255,0,0);
@@ -37,31 +37,35 @@ export class MandelbrotCanvas extends DS.DrawingSurface {
      */
     draw_mandelbrot() {
 
-        var context = this.canvas.getContext("2d");
-        var image = context.createImageData(this.canvas.width, this.canvas.height);
+        const context = this.canvas.getContext("2d");
+        if (context == null) {
+            console.error("Error: unable to get 2d context");
+            return;
+        }
+        const image = context.createImageData(this.canvas.width, this.canvas.height);
         this.data = context.createImageData(this.canvas.width, this.canvas.height);
 
         this.set_size = 0;
         console.time("create_image");
         
         // loop through all pixels in canvas
-        for ( var x=0; x<this.canvas.width; x++) {
+        for ( let x=0; x<this.canvas.width; x++) {
 
-            for ( var y=0; y<this.canvas.height; y++) {
+            for ( let y=0; y<this.canvas.height; y++) {
 
                 // determine logical coordinates of pixel
-                var canvas_point = new DS.Point(x, y);
-                var complex = this.canvas_to_logical(canvas_point);
+                const canvas_point = new DS.Point(x, y);
+                const complex = this.canvas_to_logical(canvas_point);
 
                 // determine if point is in Mandelbrot set
-                var m = this.mandelbrot(complex, 4, this.max_iterations);
+                const m = this.mandelbrot(complex, 4, this.max_iterations);
 
                 if (m == 0) {
                     this.set_size++;
                 }
 
-                var offset = (x + y * this.canvas.width) * 4;
-                var color = this.colors.get(m);
+                const offset = (x + y * this.canvas.width) * 4;
+                const color = this.colors.get(m);
                 image.data[offset    ] = color.r; 
                 image.data[offset + 1] = color.g;
                 image.data[offset + 2] = color.b;
@@ -82,20 +86,20 @@ export class MandelbrotCanvas extends DS.DrawingSurface {
      */
     mandelbrot( start: DS.Point, limit: number, iterations: number ) {
 
-        var squared = new DS.Point(start.x, start.y);
-        var count = 0;
+        const squared = new DS.Point(start.x, start.y);
+        let count = 0;
         while ( count++ < iterations ) {
 
-            var x2 = Math.pow(squared.x, 2);
-            var y2 = Math.pow(squared.y, 2);
+            const x2 = Math.pow(squared.x, 2);
+            const y2 = Math.pow(squared.y, 2);
 
             if ( (x2 + y2) > limit ) { // not in the set 
                 return count;
             }
 
             // square of a complex (x + yi) = (x*x - y*y, 2*x*y)
-            var sx = x2 - y2;
-            var sy = (2 * squared.x * squared.y);
+            const sx = x2 - y2;
+            const sy = (2 * squared.x * squared.y);
 
             // add original point 
             squared.x = sx + start.x;
@@ -118,21 +122,25 @@ export class MandelbrotCanvas extends DS.DrawingSurface {
     rotate_colors() {
 
         console.time("rotate_colors");
-        
-        var context = this.canvas.getContext("2d");
-        var image = context.createImageData(this.canvas.width, this.canvas.height);
+
+        const context = this.canvas.getContext("2d");
+        if (context == null) {
+            console.error("Error: unable to get 2d context");
+            return;
+        }
+        const image = context.createImageData(this.canvas.width, this.canvas.height);
 
         this.colors.rotate();
         
         // loop through all pixels in canvas
-        for ( var x=0; x<this.canvas.width; x++) {
+        for ( let x=0; x<this.canvas.width; x++) {
 
-            for ( var y=0; y<this.canvas.height; y++) {
+            for ( let y=0; y<this.canvas.height; y++) {
 
-                var offset = (x + y * this.canvas.width) * 4;
-                var color_index = this.data.data[offset];
-                
-                var color = this.colors.get(color_index);
+                const offset = (x + y * this.canvas.width) * 4;
+                const color_index = this.data.data[offset];
+
+                const color = this.colors.get(color_index);
                 image.data[offset    ] = color.r;
                 image.data[offset + 1] = color.g;
                 image.data[offset + 2] = color.b;
