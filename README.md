@@ -36,4 +36,15 @@ This will compile the TypeScript code and start a development server. The applic
 
 To create a production build:
 
-	npm run build
+        npm run build
+
+## Using the Mandelbrot explorer
+
+1. Start the development server with `npm start` and open [http://localhost:8080](http://localhost:8080) in your browser. The build command above will serve the production bundle from the `dist` directory if you prefer to host it yourself.
+2. Hover over the canvas to see the coordinates, iteration count, and zoom level update in the stats panel.
+3. Use your mouse wheel or trackpad scroll to zoom in and out. Hold the left mouse button and drag to pan around the set.
+4. Adjust the *Iteration Depth* slider in the control sidebar to reveal more or fewer fractal details. Higher values render more intricate boundaries at the cost of a slightly longer render time.
+5. Switch between the available color palettes with the *Palette* dropdown. Enable *Auto Rotate* to cycle through colors automatically, or use the rotate buttons for manual control.
+6. Toggle *Auto Color Reset* if you want the palette to reset after each zoom. You can also enable the optional *Orbit Trap* shading for a different look at the set.
+
+The fractal redraws immediately as you tweak the controls, so experiment with different combinations to explore new regions of the Mandelbrot set.

@@ -11,27 +11,63 @@ export class MandelbrotCanvas extends DS.DrawingSurface {
 
     private data: ImageData;
     private colors: DS.ColorTable;
-    
+    private palette: string;
+
     max_iterations: number; // give each point this many attempts to "escape" from the set
     set_size: number;       // count of number of points in last Mandelbrot set computed
-    
+
     constructor( tl: DS.Point, br: DS.Point, canvas: HTMLCanvasElement ) {
         super( tl, br, canvas );
         this.max_iterations = 500;
-        this.init_colors();
+        this.palette = "classic";
+        this.init_colors(this.palette);
     }
-    
-    init_colors() {
-        const stops = []
-        stops[0]   = new DS.Color(0,0,0);
-        stops[1]   = new DS.Color(50,0,0);
-        stops[160] = new DS.Color(255,0,0);
-        stops[320] = new DS.Color(255,255,0);
-        stops[420] = new DS.Color(0,0,255);
-        stops[500] = new DS.Color(0,0,255);
-        this.colors = new DS.ColorTable(stops);
+
+    private init_colors(palette: string) {
+        this.colors = new DS.ColorTable(this.build_color_stops(palette));
     }
-    
+
+    private build_color_stops(palette: string) {
+        const stops: Array<DS.Color> = [];
+
+        switch (palette) {
+            case "fire":
+                stops[0]   = new DS.Color(0, 0, 0);
+                stops[1]   = new DS.Color(80, 0, 0);
+                stops[120] = new DS.Color(255, 60, 0);
+                stops[240] = new DS.Color(255, 160, 0);
+                stops[360] = new DS.Color(255, 240, 0);
+                stops[500] = new DS.Color(255, 255, 255);
+                break;
+            case "ice":
+                stops[0]   = new DS.Color(0, 0, 0);
+                stops[1]   = new DS.Color(0, 30, 60);
+                stops[160] = new DS.Color(0, 120, 255);
+                stops[320] = new DS.Color(0, 200, 255);
+                stops[420] = new DS.Color(180, 255, 255);
+                stops[500] = new DS.Color(255, 255, 255);
+                break;
+            case "neon":
+                stops[0]   = new DS.Color(0, 0, 0);
+                stops[1]   = new DS.Color(40, 0, 60);
+                stops[120] = new DS.Color(120, 0, 255);
+                stops[240] = new DS.Color(0, 255, 200);
+                stops[360] = new DS.Color(255, 0, 150);
+                stops[500] = new DS.Color(255, 255, 255);
+                break;
+            default:
+                stops[0]   = new DS.Color(0,0,0);
+                stops[1]   = new DS.Color(50,0,0);
+                stops[160] = new DS.Color(255,0,0);
+                stops[320] = new DS.Color(255,255,0);
+                stops[420] = new DS.Color(0,0,255);
+                stops[500] = new DS.Color(0,0,255);
+                break;
+        }
+
+        return stops;
+    }
+
     /**
      * Draw Mandelbrot set with current view-port settings.
      */
@@ -113,12 +149,17 @@ export class MandelbrotCanvas extends DS.DrawingSurface {
         super.zoom( center, z );
         this.draw_mandelbrot();
     }
-    
+
+    pan(dx: number, dy: number) {
+        super.pan(dx, dy);
+        this.draw_mandelbrot();
+    }
+
     reset_view() {
         super.reset_view();
         this.draw_mandelbrot();
     }
-    
+
     rotate_colors() {
 
         console.time("rotate_colors");
@@ -150,5 +191,20 @@ export class MandelbrotCanvas extends DS.DrawingSurface {
         console.timeEnd("rotate_colors");
 
         context.putImageData(image, 0, 0);
+    }
+
+    set_max_iterations(iterations: number) {
+        this.max_iterations = iterations;
+        this.draw_mandelbrot();
+    }
+
+    set_color_palette(palette: string) {
+        this.palette = palette;
+        this.init_colors(palette);
+        this.draw_mandelbrot();
+    }
+
+    get palette_name() {
+        return this.palette;
     }
 }

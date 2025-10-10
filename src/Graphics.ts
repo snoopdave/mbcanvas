@@ -101,6 +101,20 @@ export class DrawingSurface {
         this.init_viewport();
     }
 
+    pan(dx: number, dy: number) {
+        this.tl = new Point(
+          this.tl.x + dx,
+          this.tl.y + dy
+        );
+
+        this.br = new Point(
+          this.br.x + dx,
+          this.br.y + dy
+        );
+
+        this.init_viewport();
+    }
+
     reset_view() {
         this.tl = this.tl0;
         this.br = this.br0;
