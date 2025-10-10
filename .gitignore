@@ -2,3 +2,4 @@ public/*
 src/*.js
 src/*.map.js
 /dist/
+/node_modules/
